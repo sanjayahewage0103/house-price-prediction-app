@@ -1,0 +1,23 @@
+# Node dependencies
+/node_modules
+/frontend/node_modules
+/user-auth-service/node_modules
+
+# Python virtual environment
+/venv
+/prediction-service/venv
+
+# Environment variables
+.env
+frontend/.env
+user-auth-service/.env
+prediction-service/.env
+
+# Build folders
+/frontend/dist
+
+# IDE and OS files
+.vscode/
+.idea/
+__pycache__/
+.DS_Store
