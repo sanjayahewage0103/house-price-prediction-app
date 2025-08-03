@@ -3,30 +3,32 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
 
-// ✅ This must be here:
-const authRoutes = require("./routes/authRoutes");
-
+// Load environment variables from .env
 dotenv.config();
 
+// Initialize app
 const app = express();
+
+// Connect to MongoDB
 connectDB();
 
+// Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // Parses incoming JSON
 
-// Basic route to check server
+// Routes
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+const predictRoutes = require("./routes/predictRoutes");
+
+app.use("/api/auth", authRoutes);       // /register and /login
+app.use("/api/users", userRoutes);      // /me
+app.use("/api/predict", predictRoutes); // prediction route (POST)
+
+// Test route (optional)
 app.get("/", (req, res) => {
   res.send("User Auth Service is running...");
 });
-
-
-// ✅ Mount routes
-app.use("/api/auth", authRoutes);
-
-const userRoutes = require("./routes/userRoutes");
-app.use("/api/users", userRoutes);
-
-
 
 // Start server
 const PORT = process.env.PORT || 5001;
