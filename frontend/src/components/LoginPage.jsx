@@ -18,7 +18,13 @@ function LoginPage() {
         password,
       });
       login(res.data);
-      navigate("/predict");
+      
+      // Redirect based on user role
+      if (res.data.role === "admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/predict");
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
