@@ -27,3 +27,26 @@ exports.predictHousePrice = async (req, res) => {
     res.status(500).json({ message: "Prediction failed", error: err.message });
   }
 };
+
+// GET /api/predict/mine
+exports.getMyPredictions = async (req, res) => {
+  try {
+    const predictions = await Prediction.find({ user: req.user._id }).sort({ createdAt: -1 });
+    res.json(predictions);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch your predictions", error: error.message });
+  }
+};
+
+// GET /api/predict/all (admin only)
+exports.getAllPredictions = async (req, res) => {
+  try {
+    const predictions = await Prediction.find({})
+      .populate("user", "username email role")
+      .sort({ createdAt: -1 });
+
+    res.json(predictions);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch all predictions", error: error.message });
+  }
+};
