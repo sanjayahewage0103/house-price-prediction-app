@@ -189,11 +189,12 @@ function PredictionForm() {
       const res = await axios.post("http://localhost:5001/api/predict", formData, {
         headers: {
           Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
         },
       });
       setResult(res.data);
     } catch (err) {
-      setError(err.response?.data?.message || "Prediction failed");
+      setError(err.response?.data?.error || err.message || "Prediction failed");
     } finally {
       setLoading(false);
     }
