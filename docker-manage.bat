@@ -148,12 +148,18 @@ goto menu
 
 :show_urls
 echo.
-echo Service URLs:
+echo Docker Service URLs (when running in containers):
 echo   Frontend:           http://localhost:3000
 echo   Auth Service:       http://localhost:5001
 echo   Prediction Service: http://localhost:5002
 echo   MongoDB:            mongodb://localhost:27017
 echo   Nginx Proxy:        http://localhost:80
+echo.
+echo Development Mode URLs (when running locally):
+echo   Frontend:           http://localhost:5173 (Vite dev server)
+echo   Auth Service:       http://localhost:5001
+echo   Prediction Service: http://localhost:5002
+echo   MongoDB:            mongodb://localhost:27017
 echo.
 goto :eof
 

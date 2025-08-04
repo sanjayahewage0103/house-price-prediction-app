@@ -19,8 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Copy ML models
-COPY ../ml_model ./ml_model
+# Note: ML models will be mounted as volume in docker-compose.yml
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash app

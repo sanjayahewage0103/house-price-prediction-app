@@ -51,6 +51,7 @@ services:
       - FLASK_ENV=production
       - FLASK_APP=app.py
       - PORT=5002
+      - MODEL_PATH=ml_model
     ports:
       - "5002:5002"
     volumes:
