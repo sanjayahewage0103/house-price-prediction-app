@@ -62,50 +62,65 @@ const fieldDescriptions = {
 
 // --- Reusable Components with Tooltips ---
 const Tooltip = ({ text }) => (
-    <div className="absolute bottom-full mb-2 w-max max-w-xs p-2 bg-gray-900 text-white text-xs rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 border border-gray-600">
-        {text}
-    </div>
+  <div className="absolute bottom-full mb-2 w-max max-w-xs p-2 bg-gray-900 text-white text-xs rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 border border-gray-600">
+    {text}
+  </div>
 );
 
 const InputField = ({ name, type = 'text', value, onChange, placeholder, required = true }) => {
-    const details = fieldDescriptions[name] || { title: name.replace(/_/g, " "), description: "No description available." };
-    return (
-        <div className="relative">
-            <label htmlFor={name} className="flex items-center text-sm font-medium text-gray-300 mb-1 capitalize">
-                {details.title}
-                <div className="group relative flex items-center ml-2">
-                    <Info className="w-4 h-4 text-gray-500 cursor-help" />
-                    <Tooltip text={details.description} />
-                </div>
-            </label>
-            <input type={type} id={name} name={name} value={value} onChange={onChange} placeholder={placeholder} required={required}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
+  const details = fieldDescriptions[name] || { title: name.replace(/_/g, " "), description: "No description available." };
+  return (
+    <div className="relative">
+      <label htmlFor={name} className="flex items-center text-sm font-medium text-gray-700 mb-2 capitalize">
+        {details.title}
+        <div className="group relative flex items-center ml-2">
+          <Info className="w-4 h-4 text-amber-600 cursor-help hover:text-amber-700 transition-colors" />
+          <Tooltip text={details.description} />
         </div>
-    );
+      </label>
+      <input 
+        type={type} 
+        id={name} 
+        name={name} 
+        value={value} 
+        onChange={onChange} 
+        placeholder={placeholder} 
+        required={required}
+        className="w-full px-4 py-3 bg-white/80 border border-amber-500/60 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-300 backdrop-blur-sm shadow-sm" 
+      />
+    </div>
+  );
 };
 
 const CheckboxField = ({ name, checked, onChange }) => {
-    const details = fieldDescriptions[name] || { title: name.replace(/_/g, " "), description: "No description available." };
-    return (
-        <label htmlFor={name} className="flex items-center space-x-3 cursor-pointer p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition">
-            <input
-                type="checkbox"
-                id={name}
-                name={name}
-                checked={checked}
-                onChange={onChange}
-                className="hidden"
-            />
-            <div className={`w-5 h-5 rounded flex items-center justify-center border ${checked ? 'bg-blue-600 border-blue-500' : 'bg-gray-700 border-gray-600'}`}>
-                {checked && <Check className="w-3 h-3 text-white" />}
-            </div>
-            <span className="text-sm text-gray-300 capitalize">{details.title}</span>
-            <div className="group relative flex items-center">
-                <Info className="w-4 h-4 text-gray-500 cursor-help" />
-                <Tooltip text={details.description} />
-            </div>
-        </label>
-    );
+  const details = fieldDescriptions[name] || { title: name.replace(/_/g, " "), description: "No description available." };
+  return (
+    <label 
+      htmlFor={name} 
+      className="flex items-center space-x-3 cursor-pointer p-3 bg-white/70 hover:bg-white/80 rounded-lg border border-amber-500/40 hover:border-amber-500/60 transition-all duration-300 backdrop-blur-sm shadow-sm"
+    >
+      <input
+        type="checkbox"
+        id={name}
+        name={name}
+        checked={checked}
+        onChange={onChange}
+        className="hidden"
+      />
+      <div className={`w-6 h-6 rounded-md flex items-center justify-center border-2 transition-all duration-300 ${
+        checked 
+          ? 'bg-gradient-to-r from-amber-500 to-yellow-500 border-amber-400 shadow-lg shadow-amber-500/25' 
+          : 'bg-white/90 border-amber-500/50 hover:border-amber-500/70 shadow-sm'
+      }`}>
+        {checked && <Check className="w-4 h-4 text-black font-bold" />}
+      </div>
+      <span className="text-sm text-gray-700 capitalize flex-1">{details.title}</span>
+      <div className="group relative flex items-center">
+        <Info className="w-4 h-4 text-amber-600/80 cursor-help hover:text-amber-700 transition-colors" />
+        <Tooltip text={details.description} />
+      </div>
+    </label>
+  );
 };
 
 function PredictionForm() {
@@ -221,144 +236,235 @@ function PredictionForm() {
   };
 
   return (
-    <div className="container mx-auto px-6 py-12">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Predict Housing Prices with Confidence
-        </h2>
-        <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-400">
-          Fill in the property details below to get an accurate price prediction and confidence interval.
-        </p>
-      </div>
-      
-      <div className="max-w-4xl mx-auto">
-        {/* Progress Steps */}
-        <div className="flex items-center justify-between mb-8 px-4">
-          {steps.map((step, index) => (
-            <React.Fragment key={step}>
-              <div className="flex flex-col items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                  currentStep >= index ? 'bg-blue-600 border-blue-500' : 'bg-gray-700 border-gray-600'
-                }`}>
-                  {currentStep > index ? (
-                    <Check className="w-6 h-6 text-white" />
+    <div style={{
+      backgroundImage: `url('./src/assets/background-image.png')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'fixed',
+      minHeight: '100vh',
+      color: '#f5f5f5',
+      padding: '2rem 1.5rem',
+      fontFamily: '"Inter", "Segoe UI", Roboto, sans-serif',
+      position: 'relative'
+    }}>
+      {/* Dark overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/40"></div>
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+            Predict Your Home's{' '}
+            <span className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
+              True Value
+            </span>
+          </h2>
+          <p className="text-lg md:text-xl max-w-3xl mx-auto leading-relaxed" style={{ color: 'rgb(255 255 255 / 0.9)' }}>
+            Using advanced AI ensemble models to provide accurate price predictions with confidence intervals
+          </p>
+        </div>
+        
+        {/* Main Container */}
+        <div 
+          style={{
+            border: '2px solid rgba(251, 191, 36, 0.6)',
+            borderRadius: '1rem',
+            padding: '2rem',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(15px)',
+            boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3)'
+          }}
+        >
+          {/* Progress Steps */}
+          <div className="flex items-center justify-between mb-8 px-4">
+            {steps.map((step, index) => (
+              <React.Fragment key={step}>
+                <div className="flex flex-col items-center">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
+                    currentStep >= index 
+                      ? 'bg-gradient-to-r from-amber-500 to-yellow-500 border-amber-400 shadow-lg shadow-amber-500/25' 
+                      : 'bg-white/80 border-amber-500/60 shadow-md'
+                  }`}>
+                    {currentStep > index ? (
+                      <Check className="w-6 h-6 text-black font-bold" />
+                    ) : (
+                      <span className={`font-bold text-lg ${currentStep >= index ? 'text-black' : 'text-amber-600'}`}>
+                        {index + 1}
+                      </span>
+                    )}
+                  </div>
+                  <p className={`mt-3 text-sm text-center transition-all duration-300 font-medium ${
+                    currentStep >= index ? 'text-amber-600 font-semibold' : 'text-gray-600'
+                  }`}>
+                    {step}
+                  </p>
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`flex-1 h-1 mx-4 rounded-full transition-all duration-500 ${
+                    currentStep > index 
+                      ? 'bg-gradient-to-r from-amber-500 to-yellow-500 shadow-sm shadow-amber-500/25' 
+                      : 'bg-gray-300'
+                  }`}></div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {currentStep === 3 ? (
+              // Final step with two-column layout
+              <div className="grid grid-cols-7 gap-8">
+                {/* Left side - Form inputs (4/7 width) */}
+                <div className="col-span-4">
+                  <h3 className="text-2xl font-semibold text-amber-700 mb-6 pb-3 border-b border-amber-500/50">
+                    🏞️ Views & Surroundings
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {renderStepContent()}
+                  </div>
+                </div>
+                
+                {/* Right side - Prediction Result (3/7 width) */}
+                <div className="col-span-3">
+                  {result ? (
+                    <div 
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.9)',
+                        backdropFilter: 'blur(15px)',
+                        border: '2px solid rgba(251, 191, 36, 0.6)',
+                        borderRadius: '1rem',
+                        overflow: 'hidden',
+                        boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2)'
+                      }}
+                    >
+                      <div className="p-6">
+                        <h3 className="text-center text-2xl font-bold text-amber-700 mb-8">🎯 Prediction Result</h3>
+                        <div className="space-y-6">
+                          {/* Lower Bound */}
+                          <div className="text-center p-4 bg-green-100/80 border border-green-400/60 rounded-lg backdrop-blur-sm shadow-sm">
+                            <p className="text-xs text-green-700 uppercase tracking-wider font-semibold">Lower Price Bound</p>
+                            <p className="text-2xl font-bold text-green-600 mt-2">{formatCurrency(result.interval_lower)}</p>
+                          </div>
+                          
+                          {/* Main Prediction */}
+                          <div 
+                            className="p-6 rounded-lg border text-center"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.15))',
+                              border: '2px solid rgba(251, 191, 36, 0.7)',
+                              boxShadow: '0 8px 32px rgba(251, 191, 36, 0.2)'
+                            }}
+                          >
+                            <p className="text-sm text-amber-800 uppercase tracking-wider font-semibold">Estimated Price</p>
+                            <p className="text-4xl font-extrabold text-gray-800 mt-2">{formatCurrency(result.prediction)}</p>
+                          </div>
+                          
+                          {/* Upper Bound */}
+                          <div className="text-center p-4 bg-red-100/80 border border-red-400/60 rounded-lg backdrop-blur-sm shadow-sm">
+                            <p className="text-xs text-red-700 uppercase tracking-wider font-semibold">Upper Price Bound</p>
+                            <p className="text-2xl font-bold text-red-600 mt-2">{formatCurrency(result.interval_upper)}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Confidence Note */}
+                        <div className="mt-6 p-4 bg-blue-50/80 border border-blue-300/60 rounded-lg backdrop-blur-sm shadow-sm">
+                          <p className="text-center text-gray-700 text-sm leading-relaxed">
+                            <span className="text-amber-700 font-semibold">💡 Confidence Interval:</span> This range captures the true sale price with high statistical confidence using advanced ensemble ML models.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
-                    <span className="font-bold">{index + 1}</span>
+                    <div 
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.85)',
+                        border: '1px solid rgba(120, 113, 108, 0.6)',
+                        borderRadius: '1rem',
+                        padding: '2rem',
+                        textAlign: 'center',
+                        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)'
+                      }}
+                    >
+                      <div className="text-gray-600">
+                        <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 rounded-full flex items-center justify-center border border-amber-500/50 shadow-lg">
+                          <span className="text-3xl">🎯</span>
+                        </div>
+                        <h3 className="text-xl font-semibold text-amber-700 mb-3">Prediction Result</h3>
+                        <p className="text-sm text-gray-700 leading-relaxed">
+                          Complete all form steps and click "Get Prediction" to see your property's estimated value with confidence intervals
+                        </p>
+                      </div>
+                    </div>
                   )}
                 </div>
-                <p className={`mt-2 text-xs text-center transition-all duration-300 ${
-                  currentStep >= index ? 'text-white font-semibold' : 'text-gray-400'
-                }`}>
-                  {step}
-                </p>
               </div>
-              {index < steps.length - 1 && (
-                <div className={`flex-1 h-1 mx-2 transition-all duration-300 ${
-                  currentStep > index ? 'bg-blue-500' : 'bg-gray-700'
-                }`}></div>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-gray-800 border border-gray-700 rounded-xl p-8 space-y-8">
-          {currentStep === 3 ? (
-            // Final step with two-column layout
-            <div className="grid grid-cols-7 gap-8">
-              {/* Left side - Form inputs (4/7 width) */}
-              <div className="col-span-4">
-                <h3 className="text-lg font-semibold text-white mb-4">Views & Surroundings</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            ) : (
+              // Other steps with regular layout
+              <div>
+                <h3 className="text-2xl font-semibold text-amber-700 mb-6 pb-3 border-b border-amber-500/50">
+                  {currentStep === 0 && '🏠 Basic Property Information'}
+                  {currentStep === 1 && '📍 Location & Valuation'}
+                  {currentStep === 2 && '🔧 Property Features'}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {renderStepContent()}
                 </div>
               </div>
-              
-              {/* Right side - Prediction Result (3/7 width) */}
-              <div className="col-span-3">
-                {result ? (
-                  <div className="bg-gray-700 rounded-xl border border-gray-600 overflow-hidden">
-                    <div className="p-6">
-                      <h3 className="text-center text-xl font-bold text-white mb-6">🎯 Prediction Result</h3>
-                      <div className="space-y-4">
-                        <div className="text-center">
-                          <p className="text-xs text-gray-400 uppercase tracking-wider">Lower Price Bound</p>
-                          <p className="text-xl font-bold text-green-400 mt-1">{formatCurrency(result.interval_lower)}</p>
-                        </div>
-                        <div className="p-4 bg-blue-600/20 rounded-lg border border-blue-500 text-center">
-                          <p className="text-xs text-blue-300 uppercase tracking-wider">Estimated Price</p>
-                          <p className="text-3xl font-extrabold text-white mt-1">{formatCurrency(result.prediction)}</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-xs text-gray-400 uppercase tracking-wider">Upper Price Bound</p>
-                          <p className="text-xl font-bold text-red-400 mt-1">{formatCurrency(result.interval_upper)}</p>
-                        </div>
-                      </div>
-                      <p className="text-center text-gray-500 mt-4 text-xs">
-                        This prediction interval captures the true sale price with high confidence.
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-gray-700 rounded-xl border border-gray-600 p-6 text-center">
-                    <div className="text-gray-400">
-                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-600 rounded-full flex items-center justify-center">
-                        <span className="text-2xl">🎯</span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-white mb-2">Prediction Result</h3>
-                      <p className="text-sm">Complete the form and click "Get Prediction" to see the estimated house price</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            // Other steps with regular layout
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {renderStepContent()}
-            </div>
-          )}
-          
-          <div className="flex justify-between items-center pt-6 border-t border-gray-700">
-            <button 
-              type="button" 
-              onClick={back} 
-              disabled={currentStep === 0}
-              className="px-6 py-2 bg-gray-600 hover:bg-gray-500 rounded-md text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              ⬅ Back
-            </button>
-            {currentStep < steps.length - 1 ? (
+            )}
+            
+            {/* Navigation */}
+            <div className="flex justify-between items-center pt-8 border-t border-amber-500/50">
               <button 
                 type="button" 
-                onClick={next} 
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium transition"
+                onClick={back} 
+                disabled={currentStep === 0}
+                className="px-8 py-3 bg-white/80 hover:bg-white/90 border border-gray-400 hover:border-gray-500 rounded-lg text-sm font-medium text-gray-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm shadow-sm"
               >
-                Next ➡
+                ⬅ Back
               </button>
-            ) : (
-              <button 
-                type="submit" 
-                disabled={loading}
-                className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-md text-sm font-medium transition disabled:bg-green-800"
-              >
-                {loading ? 'Calculating...' : 'Get Prediction'}
-              </button>
-            )}
-          </div>
-        </form>
-      </div>
-
-      {/* Error Display */}
-      {error && (
-        <div className="mt-10 max-w-2xl mx-auto p-4 bg-red-900/50 border border-red-700 rounded-lg text-center">
-          <div className="flex items-center justify-center">
-            <AlertTriangle className="h-6 w-6 text-red-400 mr-2" />
-            <h3 className="font-bold text-red-300">Prediction Error</h3>
-          </div>
-          <p className="text-red-400 mt-2">{error}</p>
+              
+              {currentStep < steps.length - 1 ? (
+                <button 
+                  type="button" 
+                  onClick={next} 
+                  className="px-8 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-bold rounded-lg text-sm transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-amber-500/25"
+                >
+                  Next ➡
+                </button>
+              ) : (
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold rounded-lg text-sm transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-green-500/25 disabled:opacity-70 disabled:transform-none"
+                >
+                  {loading ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Calculating...
+                    </span>
+                  ) : '🎯 Get Prediction'}
+                </button>
+              )}
+            </div>
+          </form>
         </div>
-      )}
+
+        {/* Error Display */}
+        {error && (
+          <div className="mt-8 max-w-2xl mx-auto p-6 bg-red-900/30 border border-red-500/50 rounded-lg text-center backdrop-blur-sm">
+            <div className="flex items-center justify-center mb-3">
+              <AlertTriangle className="h-6 w-6 text-red-400 mr-2" />
+              <h3 className="font-bold text-red-300 text-lg">Prediction Error</h3>
+            </div>
+            <p className="text-red-400">{error}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
