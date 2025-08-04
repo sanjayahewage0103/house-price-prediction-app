@@ -2,17 +2,22 @@ import { Routes, Route } from "react-router-dom";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import NavigationBar from "./components/NavigationBar";
+import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PredictionForm from "./components/PredictionForm";
 import AdminDashboard from "./components/AdminDashboard";
+import HomePage from "./components/HomePage";
+import AboutPage from "./components/AboutPage";
+import ContactPage from "./components/ContactPage";
 
 function App() {
   return (
     <>
       <NavigationBar />
       <Routes>
-        <Route path="/" element={<h1 className="p-4">Welcome to HousePrice Prediction App</h1>} />
-        <Route path="/about" element={<h1 className="p-4">About Page</h1>} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -34,8 +39,8 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
       </Routes>
+      <Footer />
     </>
   );
 }
