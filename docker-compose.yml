@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: hometrix-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: hometrix2025
+      MONGO_INITDB_DATABASE: hometrix
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - hometrix-network
+
+  # User Authentication Service
+  auth-service:
+    build:
+      context: ./user-auth-service
+      dockerfile: Dockerfile
+    container_name: hometrix-auth-service
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+      - MONGODB_URI=mongodb://admin:hometrix2025@mongodb:27017/hometrix?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-2025
+    ports:
+      - "5001:5001"
+    depends_on:
+      - mongodb
+    volumes:
+      - ./user-auth-service:/app
+      - /app/node_modules
+    networks:
+      - hometrix-network
+
+  # ML Prediction Service
+  prediction-service:
+    build:
+      context: ./prediction_service
+      dockerfile: Dockerfile
+    container_name: hometrix-prediction-service
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+      - PORT=5002
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./ml_model:/app/ml_model
+      - ./prediction_service:/app
+    networks:
+      - hometrix-network
+
+  # Frontend React Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hometrix-frontend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL=http://localhost:5001
+      - VITE_PREDICTION_URL=http://localhost:5002
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - prediction-service
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - hometrix-network
+
+  # Nginx Reverse Proxy (Optional)
+  nginx:
+    image: nginx:alpine
+    container_name: hometrix-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - frontend
+      - auth-service
+      - prediction-service
+    networks:
+      - hometrix-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  hometrix-network:
+    driver: bridge

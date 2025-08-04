@@ -9,7 +9,8 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Load model configuration
-with open(Path("../ml_model/model_config.json"), 'r') as f:
+model_path = Path("ml_model")
+with open(model_path / "model_config.json", 'r') as f:
     config = json.load(f)
 
 q_value = config['q_value']
@@ -18,13 +19,13 @@ categorical_features = config['categorical_features']
 features_order = config['features_order']
 
 # Load preprocessor and models
-preprocessor = joblib.load(Path("../ml_model/preprocessor.pkl"))
-lgbm_lower = joblib.load(Path("../ml_model/lgbm_lower.pkl"))
-lgbm_upper = joblib.load(Path("../ml_model/lgbm_upper.pkl"))
-xgb_lower  = joblib.load(Path("../ml_model/xgb_lower.pkl"))
-xgb_upper  = joblib.load(Path("../ml_model/xgb_upper.pkl"))
-cat_lower  = joblib.load(Path("../ml_model/cat_lower.pkl"))
-cat_upper  = joblib.load(Path("../ml_model/cat_upper.pkl"))
+preprocessor = joblib.load(model_path / "preprocessor.pkl")
+lgbm_lower = joblib.load(model_path / "lgbm_lower.pkl")
+lgbm_upper = joblib.load(model_path / "lgbm_upper.pkl")
+xgb_lower  = joblib.load(model_path / "xgb_lower.pkl")
+xgb_upper  = joblib.load(model_path / "xgb_upper.pkl")
+cat_lower  = joblib.load(model_path / "cat_lower.pkl")
+cat_upper  = joblib.load(model_path / "cat_upper.pkl")
 
 # Feature engineering function (same as in notebook)
 def feature_engineer(df):
@@ -114,7 +115,13 @@ def predict():
 
 @app.route("/health")
 def health():
-    return "OK", 200
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "service": "prediction-service",
+        "version": "1.0.0",
+        "models_loaded": True
+    }), 200
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5002, debug=False)

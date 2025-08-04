@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Development overrides
+  auth-service:
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./user-auth-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  prediction-service:
+    environment:
+      - FLASK_ENV=development
+    volumes:
+      - ./prediction_service:/app
+      - ./ml_model:/app/ml_model
+    command: python app.py
+
+  frontend:
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:5001
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Development database with exposed ports
+  mongodb:
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: dev123
+      MONGO_INITDB_DATABASE: hometrix_dev
