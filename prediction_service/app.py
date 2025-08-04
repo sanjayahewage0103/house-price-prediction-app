@@ -1,15 +1,18 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import joblib
 import numpy as np
 import pandas as pd
 import json
+import os
 from pathlib import Path
 from datetime import datetime
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
-# Load model configuration
-model_path = Path("ml_model")
+# Load model configuration - dynamic path for Docker/local
+model_path = Path(os.getenv("MODEL_PATH", "../ml_model"))
 with open(model_path / "model_config.json", 'r') as f:
     config = json.load(f)
 
@@ -124,4 +127,4 @@ def health():
     }), 200
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5002, debug=False)
+    app.run(host='0.0.0.0', port=5002, debug=True)

@@ -8,7 +8,7 @@ exports.predictHousePrice = async (req, res) => {
 
   try {
     // Forward input to Flask API
-    const response = await axios.post("http://localhost:5000/predict", features);
+    const response = await axios.post("http://localhost:5002/predict", features);
 
     const { prediction, interval_lower, interval_upper } = response.data;
 
