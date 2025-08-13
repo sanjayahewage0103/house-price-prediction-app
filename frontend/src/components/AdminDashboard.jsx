@@ -1,10 +1,10 @@
-// AdminDashboard.jsx – Enhanced design matching login and prediction form theme
 
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 import BackgroundImage from "../assets/background-image.png";
+import PredictionModal from "./PredictionModal"; // Import PredictionModal
 
 // Custom SVG Icons to match the design theme
 const ChartIcon = ({ className }) => (
@@ -51,6 +51,7 @@ const AdminDashboard = () => {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("date");
+  const [selectedPrediction, setSelectedPrediction] = useState(null); // State for modal
 
   useEffect(() => {
     const fetchPredictions = async () => {
@@ -106,297 +107,241 @@ const AdminDashboard = () => {
 
   if (user.role !== "admin") return <Navigate to="/" replace />;
 
-  const containerStyle = {
-    minHeight: '100vh',
-    background: `
-      linear-gradient(135deg, rgba(241, 245, 249, 0.95) 0%, rgba(226, 232, 240, 0.95) 50%, rgba(203, 213, 225, 0.95) 100%),
-      url('${BackgroundImage}')
-    `,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundAttachment: 'fixed',
-    fontFamily: '"Inter", "Segoe UI", Roboto, sans-serif',
-    padding: '2rem 1rem'
+  // Handle modal open/close
+  const handleViewDetails = (prediction) => {
+    setSelectedPrediction(prediction);
   };
 
-  const cardStyle = {
-    background: 'rgba(255, 255, 255, 0.95)',
-    backdropFilter: 'blur(20px)',
-    border: '2px solid rgba(251, 191, 36, 0.3)',
-    borderRadius: '1.5rem',
-    boxShadow: '0 25px 50px rgba(0, 0, 0, 0.15)',
-    overflow: 'hidden'
+  const handleCloseModal = () => {
+    setSelectedPrediction(null);
   };
-
-  const statCardStyle = {
-    background: 'rgba(255, 255, 255, 0.9)',
-    backdropFilter: 'blur(15px)',
-    border: '2px solid rgba(251, 191, 36, 0.4)',
-    borderRadius: '1.25rem',
-    padding: '1.5rem',
-    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.1)',
-    transition: 'all 0.3s ease',
-    cursor: 'pointer'
-  };
-
-  const iconContainerStyle = (bgColor) => ({
-    width: '3.5rem',
-    height: '3.5rem',
-    borderRadius: '1rem',
-    background: bgColor,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)'
-  });
 
   return (
-    <div style={containerStyle}>
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-            <span className="bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
-              Admin Dashboard
-            </span>
-          </h1>
-          <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-            Monitor and manage all house price predictions with advanced analytics
-          </p>
-        </div>
+    <div style={{ backgroundImage: `url('${BackgroundImage}')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }} className="min-h-screen">
+      <div className="bg-black/60 min-h-screen text-white p-4 sm:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
+                Admin Dashboard
+              </span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Monitor and manage all house price predictions with advanced analytics
+            </p>
+          </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {/* Total Predictions Card */}
-          <div 
-            style={statCardStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-8px)';
-              e.currentTarget.style.boxShadow = '0 25px 50px rgba(251, 191, 36, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.1)';
-            }}
-          >
-            <div className="flex items-center">
-              <div style={iconContainerStyle('linear-gradient(135deg, #3b82f6, #1d4ed8)')}>
-                <ChartIcon className="w-6 h-6 text-white" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 uppercase tracking-wider">Total Predictions</p>
-                <p className="text-3xl font-bold text-gray-800 mt-1">{totalPredictions.toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Average Prediction Card */}
-          <div 
-            style={statCardStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-8px)';
-              e.currentTarget.style.boxShadow = '0 25px 50px rgba(34, 197, 94, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.1)';
-            }}
-          >
-            <div className="flex items-center">
-              <div style={iconContainerStyle('linear-gradient(135deg, #22c55e, #16a34a)')}>
-                <DollarIcon className="w-6 h-6 text-white" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 uppercase tracking-wider">Average Prediction</p>
-                <p className="text-3xl font-bold text-gray-800 mt-1">{formatCurrency(avgPrediction)}</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Unique Users Card */}
-          <div 
-            style={statCardStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-8px)';
-              e.currentTarget.style.boxShadow = '0 25px 50px rgba(168, 85, 247, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.1)';
-            }}
-          >
-            <div className="flex items-center">
-              <div style={iconContainerStyle('linear-gradient(135deg, #a855f7, #7c3aed)')}>
-                <UsersIcon className="w-6 h-6 text-white" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 uppercase tracking-wider">Unique Users</p>
-                <p className="text-3xl font-bold text-gray-800 mt-1">{uniqueUsers.toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Loading State */}
-        {loading && (
-          <div style={cardStyle} className="p-12 text-center">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin mb-4"></div>
-              <p className="text-gray-600 text-lg">Loading predictions...</p>
-            </div>
-          </div>
-        )}
-        
-        {/* Error State */}
-        {error && (
-          <div className="bg-red-50/90 backdrop-blur-sm border-2 border-red-200/60 rounded-2xl p-6 text-center mb-8 shadow-lg">
-            <div className="flex items-center justify-center mb-3">
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                <span className="text-red-500 text-xl">⚠️</span>
-              </div>
-            </div>
-            <p className="text-red-700 font-medium text-lg">{error}</p>
-          </div>
-        )}
-
-        {/* Main Content */}
-        {!loading && !error && (
-          <div style={cardStyle}>
-            {/* Search and Filter Controls */}
-            <div className="p-8 border-b-2 border-amber-500/20">
-              <div className="flex flex-col lg:flex-row gap-6">
-                {/* Search Input */}
-                <div className="flex-1 relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <SearchIcon className="text-gray-400" />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Search by user email or prediction amount..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-white/80 backdrop-blur-sm border-2 border-amber-500/40 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 shadow-sm"
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '500'
-                    }}
-                  />
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {/* Total Predictions Card */}
+            <div 
+              className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-amber-500/30 transition-all duration-300 hover:scale-105 hover:shadow-amber-500/20"
+            >
+              <div className="flex items-center">
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-2xl font-bold bg-gradient-to-br from-blue-500 to-blue-700 shadow-md">
+                  <ChartIcon className="w-8 h-8 text-white" />
                 </div>
-                
-                {/* Sort Dropdown */}
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <FilterIcon className="text-gray-400" />
-                  </div>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="pl-12 pr-8 py-3 bg-white/80 backdrop-blur-sm border-2 border-amber-500/40 rounded-xl text-gray-800 focus:outline-none focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 shadow-sm appearance-none cursor-pointer"
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '500',
-                      minWidth: '200px'
-                    }}
-                  >
-                    <option value="date">Sort by Date</option>
-                    <option value="price">Sort by Price</option>
-                    <option value="user">Sort by User</option>
-                  </select>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-300 uppercase tracking-wider">Total Predictions</p>
+                  <p className="text-3xl font-bold text-white mt-1">{totalPredictions.toLocaleString()}</p>
                 </div>
               </div>
             </div>
+            
+            {/* Average Prediction Card */}
+            <div 
+              className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-amber-500/30 transition-all duration-300 hover:scale-105 hover:shadow-amber-500/20"
+            >
+              <div className="flex items-center">
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-2xl font-bold bg-gradient-to-br from-green-500 to-green-700 shadow-md">
+                  <DollarIcon className="w-8 h-8 text-white" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-300 uppercase tracking-wider">Average Prediction</p>
+                  <p className="text-3xl font-bold text-white mt-1">{formatCurrency(avgPrediction)}</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Unique Users Card */}
+            <div 
+              className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-amber-500/30 transition-all duration-300 hover:scale-105 hover:shadow-amber-500/20"
+            >
+              <div className="flex items-center">
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-2xl font-bold bg-gradient-to-br from-purple-500 to-purple-700 shadow-md">
+                  <UsersIcon className="w-8 h-8 text-white" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-300 uppercase tracking-wider">Unique Users</p>
+                  <p className="text-3xl font-bold text-white mt-1">{uniqueUsers.toLocaleString()}</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-            {/* Predictions Table */}
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="bg-gradient-to-r from-amber-50/80 to-yellow-50/80 backdrop-blur-sm">
-                    <th className="px-8 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider border-b-2 border-amber-500/20">User</th>
-                    <th className="px-8 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider border-b-2 border-amber-500/20">Prediction</th>
-                    <th className="px-8 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider border-b-2 border-amber-500/20">Lower Bound</th>
-                    <th className="px-8 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider border-b-2 border-amber-500/20">Upper Bound</th>
-                    <th className="px-8 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider border-b-2 border-amber-500/20">Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-amber-500/10">
-                  {filteredPredictions.map((pred, index) => (
-                    <tr 
-                      key={pred._id} 
-                      className="hover:bg-amber-50/40 hover:backdrop-blur-sm transition-all duration-300 cursor-pointer"
+          {/* Loading State */}
+          {loading && (
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-12 text-center shadow-lg border border-amber-500/30">
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin mb-4"></div>
+                <p className="text-gray-300 text-lg">Loading predictions...</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-500/20 backdrop-blur-lg border-2 border-red-500/50 rounded-2xl p-6 text-center mb-8 shadow-lg text-red-300">
+              <div className="flex items-center justify-center mb-3">
+                <div className="w-12 h-12 bg-red-500/30 rounded-full flex items-center justify-center">
+                  <span className="text-red-300 text-xl">⚠️</span>
+                </div>
+              </div>
+              <p className="font-medium text-lg">{error}</p>
+            </div>
+          )}
+
+          {/* Main Content */}
+          {!loading && !error && (
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-amber-500/30">
+              {/* Search and Filter Controls */}
+              <div className="p-8 border-b-2 border-amber-500/20">
+                <div className="flex flex-col lg:flex-row gap-6">
+                  {/* Search Input */}
+                  <div className="flex-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <SearchIcon className="text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Search by user email or prediction amount..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 bg-white/5 backdrop-blur-sm border-2 border-amber-500/40 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 shadow-sm"
                       style={{
-                        background: index % 2 === 0 ? 'rgba(255, 255, 255, 0.3)' : 'rgba(251, 191, 36, 0.05)'
+                        fontSize: '1rem',
+                        fontWeight: '500'
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Sort Dropdown */}
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <FilterIcon className="text-gray-400" />
+                    </div>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="pl-12 pr-8 py-3 bg-white/5 backdrop-blur-sm border-2 border-amber-500/40 rounded-xl text-white focus:outline-none focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 shadow-sm appearance-none cursor-pointer"
+                      style={{
+                        fontSize: '1rem',
+                        fontWeight: '500',
+                        minWidth: '200px'
                       }}
                     >
-                      <td className="px-8 py-6 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div 
-                            className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg"
-                            style={{
-                              background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
-                            }}
-                          >
-                            {(pred.user?.email || "U")[0].toUpperCase()}
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-semibold text-gray-800">
-                              {pred.user?.email || "unknown"}
+                      <option value="date">Sort by Date</option>
+                      <option value="price">Sort by Price</option>
+                      <option value="user">Sort by User</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Predictions Table */}
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="bg-amber-500/20 backdrop-blur-sm">
+                      <th className="px-8 py-4 text-left text-sm font-bold text-amber-300 uppercase tracking-wider border-b-2 border-amber-500/20">User</th>
+                      <th className="px-8 py-4 text-left text-sm font-bold text-amber-300 uppercase tracking-wider border-b-2 border-amber-500/20">Prediction</th>
+                      <th className="px-8 py-4 text-left text-sm font-bold text-amber-300 uppercase tracking-wider border-b-2 border-amber-500/20">Lower Bound</th>
+                      <th className="px-8 py-4 text-left text-sm font-bold text-amber-300 uppercase tracking-wider border-b-2 border-amber-500/20">Upper Bound</th>
+                      <th className="px-8 py-4 text-left text-sm font-bold text-amber-300 uppercase tracking-wider border-b-2 border-amber-500/20">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-amber-500/10">
+                    {filteredPredictions.map((pred, index) => (
+                      <tr 
+                        key={pred._id} 
+                        className="hover:bg-amber-500/10 transition-all duration-300 cursor-pointer"
+                        onClick={() => handleViewDetails(pred)} // Add onClick handler
+                        style={{
+                          background: index % 2 === 0 ? 'rgba(255, 255, 255, 0.05)' : 'rgba(251, 191, 36, 0.02)'
+                        }}
+                      >
+                        <td className="px-8 py-6 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div 
+                              className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-md"
+                              style={{
+                                background: 'linear-gradient(135deg, #f97316, #fbbf24)'
+                              }}
+                            >
+                              {(pred.user?.email || "U")[0].toUpperCase()}
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-semibold text-gray-200">
+                                {pred.user?.email || "unknown"}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6 whitespace-nowrap">
-                        <div className="text-lg font-bold text-amber-700">
-                          {formatCurrency(pred.prediction)}
-                        </div>
-                      </td>
-                      <td className="px-8 py-6 whitespace-nowrap">
-                        <div className="text-lg font-semibold text-green-600">
-                          {formatCurrency(pred.interval_lower)}
-                        </div>
-                      </td>
-                      <td className="px-8 py-6 whitespace-nowrap">
-                        <div className="text-lg font-semibold text-red-600">
-                          {formatCurrency(pred.interval_upper)}
-                        </div>
-                      </td>
-                      <td className="px-8 py-6 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-700">
-                          {new Date(pred.createdAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {new Date(pred.createdAt).toLocaleTimeString('en-US', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              
-              {/* Empty State */}
-              {filteredPredictions.length === 0 && (
-                <div className="text-center py-20">
-                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 rounded-full flex items-center justify-center border-2 border-amber-500/30 shadow-lg">
-                    <span className="text-4xl">📊</span>
+                        </td>
+                        <td className="px-8 py-6 whitespace-nowrap">
+                          <div className="text-lg font-bold text-amber-400">
+                            {formatCurrency(pred.prediction)}
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 whitespace-nowrap">
+                          <div className="text-lg font-semibold text-green-400">
+                            {formatCurrency(pred.interval_lower)}
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 whitespace-nowrap">
+                          <div className="text-lg font-semibold text-red-400">
+                            {formatCurrency(pred.interval_upper)}
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-300">
+                            {new Date(pred.createdAt).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">
+                            {new Date(pred.createdAt).toLocaleTimeString('en-US', {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                
+                {/* Empty State */}
+                {filteredPredictions.length === 0 && (
+                  <div className="text-center py-20">
+                    <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 rounded-full flex items-center justify-center border-2 border-amber-500/30 shadow-lg">
+                      <span className="text-4xl">📊</span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-300 mb-2">
+                      {searchTerm ? "No matching predictions found" : "No predictions yet"}
+                    </h3>
+                    <p className="text-gray-400">
+                      {searchTerm ? "Try adjusting your search criteria" : "Predictions will appear here once users start making them"}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                    {searchTerm ? "No matching predictions found" : "No predictions yet"}
-                  </h3>
-                  <p className="text-gray-500">
-                    {searchTerm ? "Try adjusting your search criteria" : "Predictions will appear here once users start making them"}
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+        <PredictionModal prediction={selectedPrediction} onClose={handleCloseModal} />
       </div>
     </div>
   );

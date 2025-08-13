@@ -9,6 +9,7 @@ import AdminDashboard from "./components/AdminDashboard";
 import HomePage from "./components/HomePage";
 import AboutPage from "./components/AboutPage";
 import ContactPage from "./components/ContactPage";
+import UserDashboard from "./components/UserDashboard";
 
 function App() {
   return (
@@ -36,6 +37,15 @@ function App() {
           element={
             <ProtectedRoute adminOnly={true}>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard/user"
+          element={
+            <ProtectedRoute>
+              <UserDashboard />
             </ProtectedRoute>
           }
         />
