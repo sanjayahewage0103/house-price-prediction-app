@@ -146,6 +146,15 @@ function NavigationBar() {
                         
                         {/* Menu Items */}
                         <div className="py-2">
+                          <Link
+                              to="/dashboard/user"
+                              onClick={() => setIsProfileOpen(false)}
+                              className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-orange-500/10 hover:text-orange-400 transition-colors"
+                            >
+                              <User size={16} />
+                              <span className="text-sm">My Dashboard</span>
+                            </Link>
+
                           {user.role === "admin" && (
                             <Link
                               to="/dashboard"
@@ -271,6 +280,15 @@ function NavigationBar() {
                         <span>Predict Prices</span>
                       </Link>
                       
+                      <Link
+                        to="/dashboard/user"
+                        onClick={closeMobileMenu}
+                        className="flex items-center space-x-4 text-gray-300 hover:text-orange-400 transition-all duration-200 text-lg"
+                      >
+                        <User size={24} />
+                        <span>My Dashboard</span>
+                      </Link>
+
                       {user.role === "admin" && (
                         <Link
                           to="/dashboard"
