@@ -85,16 +85,118 @@ This project was built with a focus on creating a scalable, maintainable, and ro
 
 ---
 
+## 📁 Folder Structure
+
+This project follows a modular structure, organizing different components into dedicated directories for clarity and maintainability.
+
+```
+.
+├── .dockerignore
+├── .gitignore
+├── 20282106_ensemble_submission-v6.csv
+├── DOCKER_README.md
+├── docker-compose.dev.yml
+├── docker-compose.yml
+├── docker-manage.bat
+├── docker-manage.sh
+├── Hometrix-architecture-diagram.png
+├── HousePrice_PI_Ensemble_V6.ipynb
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── .git/
+├── .venv/
+├── catboost_info/
+│   ├── catboost_training.json
+│   ├── learn_error.tsv
+│   ├── test_error.tsv
+│   ├── time_left.tsv
+│   ├── learn/
+│   ├── test/
+│   └── tmp/
+├── data/
+│   ├── dataset.csv
+│   ├── sample_submission.csv
+│   └── test.csv
+├── frontend/
+│   ├── .gitignore
+│   ├── Dockerfile
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── nginx.conf
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── README.md
+│   ├── tailwind.config.js
+│   ├── vite.config.js
+│   ├── .vite/
+│   ├── node_modules/
+│   ├── public/
+│   └── src/
+│       ├── App.css
+│       ├── App.jsx
+│       ├── index.css
+│       ├── main.jsx
+│       ├── assets/
+│       ├── components/
+│       └── context/
+├── ml_model/
+│   ├── cat_lower.pkl
+│   ├── cat_upper.pkl
+│   ├── lgbm_lower.pkl
+│   ├── lgbm_upper.pkl
+│   ├── model_config.json
+│   ├── preprocessor.pkl
+│   ├── xgb_lower.pkl
+│   └── xgb_upper.pkl
+├── mongo-init/
+│   └── init-mongo.js
+├── nginx/
+│   ├── nginx.conf
+│   └── ssl/
+├── prediction_service/
+│   ├── app.py
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── ml_model/
+└── user-auth-service/
+    ├── create-admin.js
+    ├── Dockerfile
+    ├── package-lock.json
+    ├── package.json
+    ├── server.js
+    ├── config/
+    │   └── db.js
+    ├── controllers/
+    │   ├── authController.js
+    │   └── predictController.js
+    ├── middleware/
+    │   └── authMiddleware.js
+    ├── models/
+    │   ├── Prediction.js
+    │   └── User.js
+    ├── node_modules/
+    └── routes/
+        ├── authRoutes.js
+        ├── predictRoutes.js
+        └── userRoutes.js
+```
+
 ## 🚀 Getting Started
 
 Follow these instructions to get the project up and running on your local machine for development and testing purposes.
 
-### Prerequisites
+### Running with Docker Compose
+
+This is the recommended way to run the application, as it sets up all services (frontend, backend, database, and Nginx) with minimal effort.
+
+#### Prerequisites
 
 - [Docker](https://www.docker.com/get-started)
 - [Docker Compose](https://docs.docker.com/compose/install/) (usually included with Docker Desktop)
 
-### Local Installation & Setup
+#### Local Installation & Setup
 
 1.  **Clone the repository:**
     ```bash
@@ -139,6 +241,67 @@ Follow these instructions to get the project up and running on your local machin
     docker exec -it <user-auth-service-container-id> node create-admin.js
     ```
     Follow the prompts to create your admin account.
+
+### Running Locally (without Docker)
+
+This method allows you to run each service independently on your local machine.
+
+#### Prerequisites
+
+-   **Node.js & npm:** For the Frontend and User Authentication Service.
+-   **Python & pip:** For the Prediction Service.
+-   **MongoDB:** A running MongoDB instance (e.g., via Docker or a local installation).
+
+#### Setup and Run
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/sanjayahewage0103/house-price-prediction-app.git
+    cd house-price-prediction-app
+    ```
+
+2.  **Start MongoDB (if not already running):**
+    If you don't have a local MongoDB instance, you can run it using Docker:
+    ```bash
+    docker run --name hometrix-mongodb-local -p 27017:27017 -d mongo:7.0
+    ```
+    *Note: You might need to initialize the database with `mongo-init/init-mongo.js` manually if running MongoDB outside Docker Compose.*
+
+3.  **User Authentication Service (Node.js/Express)**
+    Navigate to the `user-auth-service` directory, install dependencies, and start the server:
+    ```bash
+    cd user-auth-service
+    npm install
+    # Create a .env file with your JWT_SECRET and MONGO_URI (e.g., MONGO_URI=mongodb://localhost:27017/house-price-db)
+    npm start
+    ```
+    The service will run on `http://localhost:5001`.
+
+4.  **Prediction Service (Python/Flask)**
+    Navigate to the `prediction_service` directory, install dependencies, and start the Flask application:
+    ```bash
+    cd prediction_service
+    pip install -r requirements.txt
+    # Set FLASK_APP environment variable (Windows)
+    set FLASK_APP=app.py
+    # Set FLASK_APP environment variable (Linux/macOS)
+    export FLASK_APP=app.py
+    flask run --port 5002
+    ```
+    The service will run on `http://localhost:5002`.
+
+5.  **Frontend (React/Vite)**
+    Navigate to the `frontend` directory, install dependencies, and start the development server:
+    ```bash
+    cd frontend
+    npm install
+    npm run dev
+    ```
+    The frontend will be accessible at `http://localhost:5173`.
+
+    *Note: Ensure the `VITE_API_URL` and `VITE_PREDICTION_URL` in `frontend/.env` (or similar configuration) point to your locally running backend services (e.g., `http://localhost:5001` and `http://localhost:5002`).*
+
+Note: Test scripts and configurations would need to be added to the project to enable this functionality.
 
 ---
 
@@ -195,3 +358,4 @@ Let's connect! I'm always open to discussing new projects, creative ideas, or op
 Copyright © 2025 Sanjaya Hewage (SP)
 
 A creation of SP DevFest | SP Solutions & Holdings. All Rights Reserved.
+
